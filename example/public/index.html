@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENS AlimTalk 테스트</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .row .form-group {
+      flex: 1;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .button-item {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .button-item .row {
+      margin-bottom: 10px;
+    }
+
+    .button-item .row:last-child {
+      margin-bottom: 0;
+    }
+
+    .add-btn {
+      background: #e8f4fd;
+      color: #1976d2;
+      border: 2px dashed #1976d2;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .add-btn:hover {
+      background: #d4ebfc;
+    }
+
+    .remove-btn {
+      background: #ffebee;
+      color: #d32f2f;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .result-card {
+      display: none;
+    }
+
+    .result-card.show {
+      display: block;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .status-badge.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .status-badge.error {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .variables-hint {
+      background: #fff3e0;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #e65100;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .row {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SENS AlimTalk 테스트</h1>
+
+    <div class="card">
+      <h2 class="section-title">기본 정보</h2>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="templateCode">템플릿 코드 *</label>
+          <input type="text" id="templateCode" placeholder="예: WELCOME_001" value="TEST_001">
+        </div>
+        <div class="form-group">
+          <label for="to">수신번호 *</label>
+          <input type="tel" id="to" placeholder="01012345678" value="01012345678">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="content">메시지 내용 *</label>
+        <textarea id="content" placeholder="#{변수명} 형식으로 변수 사용 가능">안녕하세요 #{name}님!
+
+#{company}에서 알려드립니다.
+주문하신 상품이 발송되었습니다.
+
+주문번호: #{orderNo}</textarea>
+        <p class="hint">#{변수명} 형식으로 변수를 사용할 수 있습니다.</p>
+      </div>
+
+      <h2 class="section-title">변수 설정</h2>
+      <div class="variables-hint">
+        메시지에 사용된 변수: <span id="detectedVars">name, company, orderNo</span>
+      </div>
+
+      <div id="variablesContainer">
+        <div class="row">
+          <div class="form-group">
+            <label>name</label>
+            <input type="text" class="var-input" data-key="name" value="홍길동">
+          </div>
+          <div class="form-group">
+            <label>company</label>
+            <input type="text" class="var-input" data-key="company" value="테스트컴퍼니">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>orderNo</label>
+            <input type="text" class="var-input" data-key="orderNo" value="ORD-2024-001">
+          </div>
+          <div class="form-group"></div>
+        </div>
+      </div>
+
+      <h2 class="section-title">버튼 설정 (선택)</h2>
+      <div id="buttonsContainer"></div>
+      <button type="button" class="add-btn" onclick="addButton()">+ 버튼 추가</button>
+
+      <h2 class="section-title" style="margin-top: 25px;">추가 옵션</h2>
+      <div class="row">
+        <div class="form-group">
+          <label for="utmSource">UTM Source (선택)</label>
+          <input type="text" id="utmSource" placeholder="utm_source=kakao&utm_medium=alimtalk">
+        </div>
+        <div class="form-group">
+          <label for="reserveMinutes">예약 발송 (분 후)</label>
+          <input type="number" id="reserveMinutes" placeholder="예: 30 (최소 11분)">
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button type="button" class="btn-secondary" onclick="sendTest()">테스트 (Mock)</button>
+        <button type="button" class="btn-primary" onclick="sendReal()">실제 발송</button>
+      </div>
+    </div>
+
+    <div class="card result-card" id="resultCard">
+      <div class="result-header">
+        <h2 class="section-title" style="margin: 0; border: none; padding: 0;">응답 결과</h2>
+        <span class="status-badge" id="statusBadge">성공</span>
+      </div>
+      <pre id="resultJson"></pre>
+    </div>
+  </div>
+
+  <script>
+    let buttonCount = 0;
+
+    function addButton() {
+      buttonCount++;
+      const container = document.getElementById('buttonsContainer');
+      const buttonHtml = `
+        <div class="button-item" id="button-${buttonCount}">
+          <div class="row">
+            <div class="form-group">
+              <label>버튼 타입</label>
+              <select class="btn-type">
+                <option value="WL">웹 링크 (WL)</option>
+                <option value="AL">앱 링크 (AL)</option>
+                <option value="DS">배송 조회 (DS)</option>
+                <option value="BK">봇 키워드 (BK)</option>
+                <option value="MD">메시지 전달 (MD)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>버튼 이름</label>
+              <input type="text" class="btn-name" placeholder="바로가기" value="바로가기">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label>모바일 링크</label>
+              <input type="url" class="btn-link-mobile" placeholder="https://example.com">
+            </div>
+            <div class="form-group">
+              <label>PC 링크</label>
+              <input type="url" class="btn-link-pc" placeholder="https://example.com">
+            </div>
+          </div>
+          <button type="button" class="remove-btn" onclick="removeButton(${buttonCount})">버튼 삭제</button>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', buttonHtml);
+    }
+
+    function removeButton(id) {
+      document.getElementById(`button-${id}`).remove();
+    }
+
+    function getFormData() {
+      const data = {
+        templateCode: document.getElementById('templateCode').value,
+        to: document.getElementById('to').value,
+        content: document.getElementById('content').value,
+      };
+
+      // Variables
+      const variables = {};
+      document.querySelectorAll('.var-input').forEach(input => {
+        if (input.dataset.key && input.value) {
+          variables[input.dataset.key] = input.value;
+        }
+      });
+      if (Object.keys(variables).length > 0) {
+        data.variables = variables;
+      }
+
+      // Buttons
+      const buttons = [];
+      document.querySelectorAll('.button-item').forEach(item => {
+        const btn = {
+          type: item.querySelector('.btn-type').value,
+          name: item.querySelector('.btn-name').value,
+        };
+        const linkMobile = item.querySelector('.btn-link-mobile').value;
+        const linkPc = item.querySelector('.btn-link-pc').value;
+        if (linkMobile) btn.linkMobile = linkMobile;
+        if (linkPc) btn.linkPc = linkPc;
+        buttons.push(btn);
+      });
+      if (buttons.length > 0) {
+        data.buttons = buttons;
+      }
+
+      // UTM Source
+      const utmSource = document.getElementById('utmSource').value;
+      if (utmSource) {
+        data.utmSource = utmSource;
+      }
+
+      // Reserve
+      const reserveMinutes = document.getElementById('reserveMinutes').value;
+      if (reserveMinutes) {
+        data.reserveMinutes = parseInt(reserveMinutes);
+      }
+
+      return data;
+    }
+
+    function showResult(data, isSuccess) {
+      const card = document.getElementById('resultCard');
+      const badge = document.getElementById('statusBadge');
+      const json = document.getElementById('resultJson');
+
+      card.classList.add('show');
+      badge.textContent = isSuccess ? '성공' : '실패';
+      badge.className = `status-badge ${isSuccess ? 'success' : 'error'}`;
+      json.textContent = JSON.stringify(data, null, 2);
+
+      card.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function sendRequest(endpoint) {
+      const data = getFormData();
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        showResult(result, result.success);
+      } catch (error) {
+        showResult({ error: error.message }, false);
+      }
+    }
+
+    function sendTest() {
+      sendRequest('/alimtalk/test');
+    }
+
+    function sendReal() {
+      if (!confirm('실제 알림톡을 발송하시겠습니까?\n\n.env 파일에 SENS API 키가 설정되어 있어야 합니다.')) {
+        return;
+      }
+      sendRequest('/alimtalk/send');
+    }
+
+    // 메시지 내용에서 변수 감지
+    document.getElementById('content').addEventListener('input', function() {
+      const content = this.value;
+      const matches = content.match(/#\{(\w+)\}/g) || [];
+      const vars = matches.map(m => m.replace(/[#{}]/g, ''));
+      document.getElementById('detectedVars').textContent = vars.length > 0 ? vars.join(', ') : '없음';
+    });
+
+    // 초기 버튼 하나 추가
+    addButton();
+  </script>
+</body>
+</html>
