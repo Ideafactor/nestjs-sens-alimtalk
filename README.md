@@ -33,6 +33,7 @@ import { SensAlimtalkModule } from 'nestjs-sens-alimtalk';
         plusFriendId: config.get('KAKAO_PLUS_FRIEND_ID'),
         useSmsFailover: true, // SMS 대체 발송 (선택, 기본값: true)
       }),
+      isGlobal: true, // 전역 모듈 여부 (선택, 기본값: true)
     }),
 
     // 방법 2: forRoot (직접 설정)
@@ -41,10 +42,23 @@ import { SensAlimtalkModule } from 'nestjs-sens-alimtalk';
     //   secretKey: 'your-secret-key',
     //   serviceId: 'your-service-id',
     //   plusFriendId: '@yourplusfriend',
+    //   isGlobal: true, // 전역 모듈 여부 (선택, 기본값: true)
     // }),
   ],
 })
 export class AppModule {}
+```
+
+#### `isGlobal` 옵션
+
+기본값은 `true`로 기존 동작과 동일합니다. 멀티테넌시 구조처럼 모듈을 여러 인스턴스로 등록해야 하는 경우 `false`로 설정하세요.
+
+```typescript
+// 기능별로 독립적인 모듈 인스턴스가 필요한 경우
+SensAlimtalkModule.forRoot({
+  // ...
+  isGlobal: false,
+})
 ```
 
 ### 환경 변수
@@ -187,6 +201,8 @@ const message = this.alimtalkService
   .failoverContent('SMS 대체 발송 시 표시될 내용');
 ```
 
+`useSmsFailover(false)`로 설정하면 `failoverConfig` 필드 자체가 요청에서 제외됩니다. SENS API에서 불필요한 필드로 인한 오류를 방지합니다.
+
 ### 플러스친구 ID 변경
 
 ```typescript
@@ -321,6 +337,54 @@ nestjs-sens-alimtalk/
 ├── package.json
 └── tsconfig.json
 ```
+
+## 변경 이력
+
+### v1.1.0
+
+#### 개선 사항
+
+**`isGlobal` 옵션 추가** (`SensAlimtalkConfig`, `SensAlimtalkAsyncOptions`)
+
+`@Global()` 데코레이터를 하드코딩하는 대신 `DynamicModule.global` 속성을 동적으로 제어합니다. 기본값은 `true`로 기존 동작과 동일하며, `false`로 설정하면 해당 모듈 범위에서만 `SensAlimtalkService`가 주입됩니다.
+
+**`build()` 필수 필드 검증 추가**
+
+`templateCode`, `to`, `content`를 설정하지 않고 `build()`를 호출하면 명확한 오류 메시지를 던집니다. 기존에는 `undefined.replace is not a function` 같은 불명확한 런타임 오류가 발생했습니다.
+
+```
+Error: templateCode is required. Call .templateCode() before .build()
+Error: to is required. Call .to() before .build()
+Error: content is required. Call .content() before .build()
+```
+
+**`failoverConfig` 조건부 포함 수정**
+
+`useSmsFailover(false)` 설정 시 `failoverConfig` 필드가 API 요청 바디에서 제외됩니다. 이전에는 `useSmsFailover` 값에 관계없이 항상 포함되어 SENS API에서 불필요한 필드로 거부될 수 있었습니다.
+
+**`HttpStatus` 안전 캐스팅**
+
+SENS API가 NestJS에 정의되지 않은 HTTP 상태 코드(예: 429 Too Many Requests)를 반환하는 경우, 강제 캐스팅 대신 `HttpStatus.BAD_GATEWAY`로 안전하게 폴백합니다.
+
+#### 의존성 재분류
+
+소비자 앱의 패키지 버전 충돌을 방지하기 위해 의존성을 재분류했습니다.
+
+| 패키지 | 변경 전 | 변경 후 |
+|--------|---------|---------|
+| `@nestjs/axios` | `dependencies` | `peerDependencies` |
+| `@nestjs/common` | `dependencies` + `peerDependencies` (중복) | `peerDependencies` |
+| `@nestjs/core` | `peerDependencies` | `peerDependencies` |
+| `@nestjs/config` | `dependencies` | 제거 (라이브러리 내부에서 미사용) |
+| `axios` | `dependencies` | `peerDependencies` |
+| `rxjs` | `dependencies` | `peerDependencies` |
+
+> **마이그레이션:** `@nestjs/axios`, `axios`, `rxjs`가 소비자 앱의 의존성에 없다면 별도로 설치해야 합니다.
+> ```bash
+> npm install @nestjs/axios axios rxjs
+> ```
+
+`engines` 필드가 추가되어 Node.js 16 이상을 요구합니다. `exports` 필드 추가로 번들러 호환성이 향상됩니다.
 
 ## 라이선스
 

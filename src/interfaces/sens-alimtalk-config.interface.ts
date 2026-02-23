@@ -6,6 +6,7 @@ export interface SensAlimtalkConfig {
   serviceId: string;
   plusFriendId: string;
   useSmsFailover?: boolean;
+  isGlobal?: boolean;
 }
 
 export interface SensAlimtalkOptionsFactory {
@@ -16,6 +17,7 @@ export interface SensAlimtalkOptionsFactory {
 
 export interface SensAlimtalkAsyncOptions
   extends Pick<ModuleMetadata, 'imports'> {
+  isGlobal?: boolean;
   useExisting?: Type<SensAlimtalkOptionsFactory>;
   useClass?: Type<SensAlimtalkOptionsFactory>;
   useFactory?: (

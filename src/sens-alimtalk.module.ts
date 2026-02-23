@@ -1,4 +1,4 @@
-import { DynamicModule, Module, Provider, Global } from '@nestjs/common';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import {
   SensAlimtalkConfig,
@@ -8,11 +8,11 @@ import {
 import { SENS_ALIMTALK_MODULE_OPTIONS } from './constants/sens-alimtalk.constants';
 import { SensAlimtalkService } from './sens-alimtalk.service';
 
-@Global()
 @Module({})
 export class SensAlimtalkModule {
   static forRoot(config: SensAlimtalkConfig): DynamicModule {
     return {
+      global: config.isGlobal ?? true,
       module: SensAlimtalkModule,
       imports: [HttpModule],
       providers: [
@@ -28,6 +28,7 @@ export class SensAlimtalkModule {
 
   static forRootAsync(options: SensAlimtalkAsyncOptions): DynamicModule {
     return {
+      global: options.isGlobal ?? true,
       module: SensAlimtalkModule,
       imports: [...(options.imports || []), HttpModule],
       providers: [

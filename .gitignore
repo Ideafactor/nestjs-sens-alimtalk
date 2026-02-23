@@ -28,6 +28,9 @@ yarn-error.log*
 # Test coverage
 coverage/
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 # Misc
 *.tgz
 .npm

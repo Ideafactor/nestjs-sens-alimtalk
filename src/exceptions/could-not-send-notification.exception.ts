@@ -10,12 +10,12 @@ export class CouldNotSendNotificationException extends HttpException {
   static serviceRespondedWithAnHttpError(
     error: AxiosError,
   ): CouldNotSendNotificationException {
-    const status = error.response?.status ?? 500;
-    const message = `SensAlimtalk responded with an HTTP error: ${status}: ${error.message}`;
-    return new CouldNotSendNotificationException(
-      message,
-      status as HttpStatus,
-    );
+    const rawStatus = error.response?.status ?? 500;
+    const status = Object.values(HttpStatus).includes(rawStatus as HttpStatus)
+      ? (rawStatus as HttpStatus)
+      : HttpStatus.BAD_GATEWAY;
+    const message = `SensAlimtalk responded with an HTTP error: ${rawStatus}: ${error.message}`;
+    return new CouldNotSendNotificationException(message, status);
   }
 
   static serviceRespondedWithAnError(

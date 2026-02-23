@@ -172,6 +172,16 @@ export class SensAlimtalkMessageBuilder {
   }
 
   build(): SensAlimtalkRequestBody {
+    if (!this._templateCode) {
+      throw new Error('templateCode is required. Call .templateCode() before .build()');
+    }
+    if (!this._to) {
+      throw new Error('to is required. Call .to() before .build()');
+    }
+    if (!this._content) {
+      throw new Error('content is required. Call .content() before .build()');
+    }
+
     const processedContent = this.replaceVariables(this._content);
     const processedButtons = this.processButtons();
     const recipients = Array.isArray(this._to) ? this._to : [this._to];
@@ -182,9 +192,9 @@ export class SensAlimtalkMessageBuilder {
       buttons: processedButtons,
       countryCode: this._countryCode,
       useSmsFailover: this._useSmsFailover,
-      failoverConfig: {
-        content: this.getFailoverContent(),
-      },
+      ...(this._useSmsFailover && {
+        failoverConfig: { content: this.getFailoverContent() },
+      }),
     }));
 
     const body: SensAlimtalkRequestBody = {
